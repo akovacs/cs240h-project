@@ -1,56 +1,53 @@
-flags: {}
+flags:
+  aeson:
+    old-locale: true
 extra-package-dbs: []
 packages:
 - '.'
-- location:
-    git: https://github.com/music-suite/lilypond.git
-    commit: 35a801df218d577f0845f9ed9ab3386523954fab
-- location:
-    git: https://github.com/music-suite/music-articulation.git
-    commit: 6549d7c5511d142a69d73d020563c4bd00b12653
-- location:
-    git: https://github.com/music-suite/music-dynamics.git
-    commit: ced2f09f44baa4e282b1c564f330500593e4d44e
-- location:
-    git: https://github.com/music-suite/music-dynamics-literal.git
-    commit: dc41e9a5781502fac48171e0207f41c5495f7ac0
-- location:
-    git: https://github.com/music-suite/music-parts.git
-    commit: 38aa0aa30207ad83ef9382d681c29f5ed3cc1117
-- location:
-    git: https://github.com/music-suite/music-pitch.git
-    commit: 0308c04580536ffc82b020eacdb72a6e68513221
-- location:
-    git: https://github.com/music-suite/music-pitch-literal.git
-    commit: ad069f893f67b1367dd5fab40114bdb1a9f88710
-- location:
-    git: https://github.com/music-suite/music-preludes.git
-    commit: acf4748e240814b54550a265f4f5b81582100152
-- location:
-    git: https://github.com/music-suite/music-score.git
-    commit: 0b39f4e8da3f7672d4686b2ae0c1a53e5d1d7cc4
-- location:
-    git: https://github.com/music-suite/music-suite.git
-    commit: 8da0ceec0fc79063a53f4e583092040ddfdda9ff
-- location:
-    git: https://github.com/music-suite/musicxml2.git
-    commit: 69bffbb9bfb075495b0a5883389c949810f890d2
 extra-deps:
+- abcnotation-1.9.0
 - aeson-0.11.0.0
 - applicative-numbers-0.1.3
+- attoparsec-0.13.0.1
 - average-0.6.1
+- base-orphans-0.3.3
+- bifunctors-5.2
 - data-interval-1.2.0
 - extended-reals-0.2.1.0
 - fail-4.9.0.0
+- free-4.12.4
 - happstack-lite-7.3.6
-- hsini-0.4.2
+- hspec-2.2.2
+- hspec-core-2.2.2
+- hspec-discover-2.2.2
+- hspec-expectations-0.7.2
+- kan-extensions-5.0.1
+- lens-4.13.2
+- lilypond-1.9.0
 - monadplus-1.4.2
+- mtl-2.2.1
+- music-articulation-1.9.0
+- music-dynamics-1.9.0
+- music-dynamics-literal-1.9.0
+- music-parts-1.9.0
+- music-pitch-1.9.0
+- music-pitch-literal-1.9.0
+- music-preludes-1.9.0
+- music-score-1.9.0
+- music-suite-1.9.0
+- musicxml2-1.9.0
 - positive-0.4.1
 - prettify-1.0
+- primitive-0.6.1.0
+- profunctors-5.1.2
+- reflection-2.1.2
 - reverse-apply-2.0.1
 - roman-numerals-0.5.1.5
+- semigroupoids-5.0.1
 - transformers-0.4.3.0
+- transformers-compat-0.4.0.4
 - ty-0.1.6
 - type-unary-0.2.21
-- vector-space-points-0.2.1.1
-resolver: lts-5.3
+- vector-0.11.0.0
+- vector-space-0.10.3
+resolver: lts-2.22
