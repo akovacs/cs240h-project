@@ -1,22 +1,26 @@
--- | Run ParseIni on input file, pretty printing the results
-module Main where
+import Sound.Tidal.Context
 
-import ParseIni
-import PrettyPrintIni
+-- compile: stack build
+-- run: stack exec parseini-exe
 
-import qualified Data.ByteString as B
-import System.Exit
+setupTidalStream :: IO (OscPattern -> IO ())
+setupTidalStream = do
+  putStrLn "Starting Tidal Dirt Software Synth"
+  d1 <- dirtStream
+  return d1
 
--- |Main - parse input file, then pretty-print the result
+playSimplePattern :: (OscPattern -> t) -> String -> t
+playSimplePattern s x = s $ sound (p x)
+
+playAndWait s x = do
+  playSimplePattern s x
+  getLine
+
 main :: IO ()
 main = do
-    -- take in input
-    infile <- B.getContents
-
-    -- run the parser on the input
-    let result = parseIniFile infile
-    
-    -- run the pretty printer on the result if it succeeded
-    either (\err -> putStrLn err >> exitFailure)
-           (\success -> (B.putStr $ prettyPrint success) >> exitSuccess)
-           result
+  d1 <- setupTidalStream
+  let ps = ["bd","bd cp","[bd bd] cp","[bd*4] [cp ~ arpy*2 bd]"]
+  putStrLn "Press enter to advance pattern until finished"
+  getLine
+  mapM (playAndWait d1) ps
+  putStrLn "Finished"

@@ -116,7 +116,7 @@ showOsc :: B.ByteString -> Either HaskellInterpreter.InterpreterError OscPattern
 showOsc inputString (Left err) = pageSkeleton $ do
     showInput inputString
     H.h3 ! A.style "color:red;" $ "Parse error"
-    H.p "The parser returned the following error (but note that it is probably not meaningful!):"
+    H.p "The parser returned the following error:"
     monoBlock (show err)
     brClear
 
@@ -150,7 +150,7 @@ postResponse = do method POST
 
 -- |Before receiving user input, display a form requesting some input.
 getResponse :: ServerPart Response
-getResponse = method GET >> ( ok . toResponse . pageSkeleton $ submitForm T.empty )
+getResponse = method GET >> ( ok . toResponse . pageSkeleton $ submitForm "bd bd sn" )
 
 
 -- *** Misc *** --

@@ -13,28 +13,31 @@ README
     cd Dirt
     make clean; make
 
-# Setup audio
-
-    sudo gpasswd -a akovacs audio
-    # non-realtime using -r flag, send to audio card 1 `aplay -l`
-    jackd -r -d alsa -d hw:1
-    
-    ./dirt
 
 # Run to create new project from scratch
 
     # stack setup
     # cabal install cabal-install
 
-# Update dependencies in stack.yaml (after adding new libraries)
+# Update dependencies in stack.yaml (after adding new libraries) and build
 
     stack solver --update-config
-
-# Compile and run
-
     stack build
-    stack exec parseini-web
+
+# Start audio
+
+    # Only need to do this once
+    sudo gpasswd -a akovacs audio
+    # Start daemon in non-realtime mode using -r flag, send to audio card 1 `aplay -l`
+    jackd -r -d alsa -d hw:1
+    # Start software synth
+    ./dirt
+
+# Run standalone commandline example
+
+    stack exec parseini-exe
 
 # Open web ui in browser
 
+    stack exec parseini-web
     firefox "localhost:8888" &
