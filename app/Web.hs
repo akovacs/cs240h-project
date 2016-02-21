@@ -6,7 +6,8 @@ import ParseIni
 import PrettyPrintIni
 
 import Data.ByteString.Builder
-import qualified Data.ByteString as B
+import qualified Data.ByteString.Char8 as B
+import qualified Data.ByteString.Lazy.Char8 as BL
 import Data.List (foldl', intersperse)
 import qualified Data.Map.Strict as M
 import Data.Monoid
@@ -125,17 +126,24 @@ showOsc inputString (Right oscPattern) = pageSkeleton $ do
     monoBlock (show oscPattern)
     brClear
 
+toStrictBS :: BL.ByteString -> B.ByteString
+toStrictBS = B.concat . BL.toChunks
+
+--getSound :: String -> IO Either HaskellInterpreter.InterpreterError OscPattern
+getSound inputString = do
+    tidalStream <- Tidal.dirtStream
+    errorOrOscPattern <- interpretOscPattern inputString
+    sound <- patternOrSilence errorOrOscPattern
+    _ <- tidalStream $ sound
+    return errorOrOscPattern
+
 -- |After receiving user input, attempt a parse, and then call the appropriate handler.
 postResponse :: ServerPart Response
 postResponse = do method POST
                   -- TODO: don't reinitialize on each request
-                  tidalStream <- Tidal.dirtStream
-                  iniFileText <- lookText "iniFile"
-                  let inputString = encodeUtf8 . T.toStrict . removeLF $ iniFileText
-                  errorOrOscPattern <- interpretOscPattern (B.unpack inputString) -- TODO: don't use String
-                  sound <- patternOrSilence errorOrOscPattern
-                  _ <- tidalStream $ sound
-                  ok . toResponse $ showOsc inputString errorOrOscPattern
+                  inputLazyBS <- lookBS "iniFile"
+                  errorOrOscPattern <- liftIO $ getSound (BL.unpack inputLazyBS)
+                  ok . toResponse $ showOsc (toStrictBS inputLazyBS) errorOrOscPattern
                   --let sErr = showError inputString iniFileText
                   --let sRes = showResult inputString iniFileText
                   --ok . toResponse $ either sErr sRes iniParsed
@@ -143,31 +151,6 @@ postResponse = do method POST
 -- |Before receiving user input, display a form requesting some input.
 getResponse :: ServerPart Response
 getResponse = method GET >> ( ok . toResponse . pageSkeleton $ submitForm T.empty )
-
-
-
-
--- *** Prettified `show` for INIFile *** ---
-
--- |A pretty printer for INIFile that gives an output like the Show instance of Map.
-showINIFile :: INIFile -> T.Text
-showINIFile = TE.decodeUtf8 . toLazyByteString . M.foldrWithKey showINIHelp mempty
-  where showINIHelp k s m = showSectName k <> showSection s <> byteString "\n\n" <> m
-
--- |Show a section name in a prettier "show"-ish style.
-showSectName :: INISectName -> Builder
-showSectName n = stringUtf8 (show n) <> byteString "\n"
-
--- |Show a section in a prettier "show"-ish style.
-showSection :: INISection -> Builder
-showSection s = byteString "  [ " <> kvWithSeps <> byteString "\n  ]"
-  where kvWithSeps = foldl' (<>) mempty $ intersperse (byteString "\n  , ") kvShows
-        kvShows = map showKV $ M.assocs s
-        showKV (k, vs) = stringUtf8 (show k) <> byteString "\n      [ " <> vWithSeps vs <> byteString "\n      ]"
-        vWithSeps vs = foldl' (<>) mempty $ intersperse (byteString "\n      , ") $ vShows vs
-        vShows vs = map (stringUtf8 . show) vs
-
-
 
 
 -- *** Misc *** --
