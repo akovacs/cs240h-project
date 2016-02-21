@@ -14,10 +14,15 @@ import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import qualified Data.Text.Lazy as T
 import qualified Data.Text.Lazy.Encoding as TE
 import Happstack.Lite
+import Language.Haskell.Interpreter as HaskellInterpreter
+import qualified Sound.Tidal.Context as Tidal
+import qualified Sound.Tidal.Stream as TidalStream
 import Text.Blaze.Html (ToMarkup)
 import Text.Blaze.Html5 ((!))
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
+
+type OscPattern = Tidal.Pattern TidalStream.OscMap
 
 -- *** HTML Generating functions *** --
 
@@ -67,37 +72,73 @@ showInput i = do
 -- *** Handlers for GET and POST *** --
 
 -- |After receiving user input, if a parse error occurs, this is the page we generate.
-showError :: B.ByteString -> T.Text -> String -> H.Html
-showError i t e = pageSkeleton $ do
-    showInput i
-    H.h3 ! A.style "color:red;" $ "Parse error"
-    H.p "The parser returned the following error (but note that it is probably not meaningful!):"
-    monoBlock e
-    brClear
-    submitForm t
+--showError :: B.ByteString -> T.Text -> String -> H.Html
+--showError i t e = pageSkeleton $ do
+--    showInput i
+--    H.h3 ! A.style "color:red;" $ "Parse error"
+--    H.p "The parser returned the following error (but note that it is probably not meaningful!):"
+--    monoBlock e
+--    brClear
+--    submitForm t
+
 
 -- |After receiving user input, if a parse is successful, this is the page we generate.
-showResult :: B.ByteString -> T.Text -> INIFile -> H.Html
-showResult i t f = pageSkeleton $ do
-    showInput i
-    H.h3 "Parser results"
-    H.p "The parser returned the following INIFile:"
-    monoBlock $ showINIFile f
-    H.h3 "Pretty printer results"
-    H.p "The pretty printer returned the following text:"
-    monoBlock . decodeUtf8 $ prettyPrint f
+--showResult :: B.ByteString -> T.Text -> OscPattern -> H.Html
+--showResult i t f = pageSkeleton $ do
+--    showInput i
+--    H.h3 "Parser results"
+--    H.p "The parser returned the following INIFile:"
+--    monoBlock $ showINIFile f
+--    H.h3 "Pretty printer results"
+--    H.p "The pretty printer returned the following text:"
+--    monoBlock . decodeUtf8 $ prettyPrint f
+--    brClear
+--    submitForm t
+
+-- TODO: use hint-server to run a _safe_ interpreter for haskell expressions in webserver.
+-- interpretOscPattern  :: (MonadIO m, Control.Monad.Catch.MonadMask m) => String -> m (Either InterpreterError OscPattern)
+interpretOscPattern inputString = HaskellInterpreter.runInterpreter $ do
+    HaskellInterpreter.set [languageExtensions := [OverloadedStrings]]
+    HaskellInterpreter.setImports ["Prelude","Sound.Tidal.Context","Sound.OSC.Type","Sound.OSC.Datum","Data.Map"]
+    HaskellInterpreter.interpret inputString (HaskellInterpreter.as::OscPattern)
+
+-- Interpret OscPattern
+patternOrSilence :: Either HaskellInterpreter.InterpreterError OscPattern -> IO OscPattern
+patternOrSilence (Left err) = do
+  putStrLn (show err)
+  return $ Tidal.sound (Tidal.p "")
+patternOrSilence (Right patt) = do
+  putStrLn (show patt)
+  return patt
+
+showOsc :: B.ByteString -> Either HaskellInterpreter.InterpreterError OscPattern -> H.Html
+showOsc inputString (Left err) = pageSkeleton $ do
+    showInput inputString
+    H.h3 ! A.style "color:red;" $ "Parse error"
+    H.p "The parser returned the following error (but note that it is probably not meaningful!):"
+    monoBlock (show err)
     brClear
-    submitForm t
+
+showOsc inputString (Right oscPattern) = pageSkeleton $ do
+    showInput inputString
+    H.h3 ! A.style "color:green;" $ "Interpreted Pattern"
+    monoBlock (show oscPattern)
+    brClear
 
 -- |After receiving user input, attempt a parse, and then call the appropriate handler.
 postResponse :: ServerPart Response
 postResponse = do method POST
+                  -- TODO: don't reinitialize on each request
+                  tidalStream <- Tidal.dirtStream
                   iniFileText <- lookText "iniFile"
-                  let iniFile = encodeUtf8 . T.toStrict . removeLF $ iniFileText
-                  let iniParsed = parseIniFile iniFile
-                  let sErr = showError iniFile iniFileText
-                  let sRes = showResult iniFile iniFileText
-                  ok . toResponse $ either sErr sRes iniParsed
+                  let inputString = encodeUtf8 . T.toStrict . removeLF $ iniFileText
+                  errorOrOscPattern <- interpretOscPattern (B.unpack inputString) -- TODO: don't use String
+                  sound <- patternOrSilence errorOrOscPattern
+                  _ <- tidalStream $ sound
+                  ok . toResponse $ showOsc inputString errorOrOscPattern
+                  --let sErr = showError inputString iniFileText
+                  --let sRes = showResult inputString iniFileText
+                  --ok . toResponse $ either sErr sRes iniParsed
 
 -- |Before receiving user input, display a form requesting some input.
 getResponse :: ServerPart Response
