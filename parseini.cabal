@@ -42,6 +42,24 @@ executable parseini-exe
                      , tidal
   default-language:    Haskell2010
 
+executable tidal-server
+  hs-source-dirs:      app
+  main-is:             Server.hs
+  ghc-options:         -Wall -fno-warn-unused-do-bind -fno-warn-missing-signatures -threaded -rtsopts -with-rtsopts=-N
+  build-depends:       base
+                     , parseini
+                     , bytestring
+                     , containers
+                     , attoparsec
+                     , happstack-lite
+                     , hint
+                     , network
+                     , text
+                     , tidal
+                     , blaze-html
+
+  default-language:    Haskell2010
+
 executable parseini-web
   hs-source-dirs:      app
   main-is:             Web.hs
