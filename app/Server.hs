@@ -1,9 +1,9 @@
 -- | Run server which accepts user-specified patterns described as
--- | strings and prints them in a loop.
+-- | strings (and maybe OSC messages in the future) and plays them in a loop.
 
 -- compile: stack build
 -- run: stack exec tidal-server
--- test: echo "Test" | nc --verbose --udp localhost 8000
+-- test: echo "[bd bd] cp" | nc --verbose --udp localhost 8000
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
@@ -12,7 +12,21 @@ import Network.Socket
 import Network.BSD
 import Data.List
 
+import qualified Sound.Tidal.Context as Tidal
+
 type HandlerFunc = SockAddr -> String -> IO ()
+
+
+setupTidalStream :: IO (Tidal.OscPattern -> IO ())
+setupTidalStream = do
+  putStrLn "Starting Tidal Dirt Software Synth"
+  tidalStream <- Tidal.dirtStream
+  return tidalStream
+
+
+playSimplePattern :: (Tidal.OscPattern -> t) -> String -> t
+playSimplePattern stream patternString = stream $ Tidal.sound (Tidal.p patternString)
+
 
 server :: String          -- Port number or name.
        -> HandlerFunc   -- Function to handle incoming messages.
@@ -31,17 +45,20 @@ server port handlerfunc = withSocketsDo $ do
     -- Bind it to the address we're listening to
     bindSocket sock (addrAddress serveraddr)
 
+    tidalStream <- setupTidalStream
+
     -- Loop forever processing incoming data.  Ctrl-C to abort.
-    processMessages sock
+    processMessages sock tidalStream
   where
-    processMessages sock = do
+    processMessages sock tidalStream = do
       -- Receive one UDP packet, maximum length 1024 bytes,
       -- save its content into msg and its source IP and port into addr
-      (msg, _, addr) <- recvFrom sock 1024
+      (message, _, address) <- recvFrom sock 1024
       -- Handle it
-      handlerfunc addr msg
+      handlerfunc address message 
+      playSimplePattern tidalStream message
       -- And process more messages
-      processMessages sock
+      processMessages sock tidalStream
 
 -- A simple handler that prints incoming packets
 printHandler :: HandlerFunc

@@ -37,6 +37,11 @@ README
 
     stack exec parseini-exe
 
+# Run UDP server and send it a pattern to play
+
+    stack exec tidal-server
+    echo "[bd bd] cp" | nc --verbose --udp localhost 8000
+
 # Open web ui in browser
 
     stack exec parseini-web
