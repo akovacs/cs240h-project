@@ -1,26 +1,37 @@
-import Sound.Tidal.Context
+import Control.Concurrent (threadDelay)
+import Control.Monad (forever)
+import Control.Distributed.Process
+import Control.Distributed.Process.Node
+import Network.Transport.TCP (createTransport, defaultTCPParameters)
 
--- compile: stack build
--- run: stack exec parseini-exe
+replyBack :: (ProcessId, String) -> Process ()
+replyBack (sender, msg) = send sender msg
 
-setupTidalStream :: IO (OscPattern -> IO ())
-setupTidalStream = do
-  putStrLn "Starting Tidal Dirt Software Synth"
-  d1 <- dirtStream
-  return d1
-
-playSimplePattern :: (OscPattern -> t) -> String -> t
-playSimplePattern s x = s $ sound (p x)
-
-playAndWait s x = do
-  playSimplePattern s x
-  getLine
+logMessage :: String -> Process ()
+logMessage msg = say $ "handling " ++ msg
 
 main :: IO ()
 main = do
-  d1 <- setupTidalStream
-  let ps = ["bd","bd cp","[bd bd] cp","[bd*4] [cp ~ arpy*2 bd]"]
-  putStrLn "Press enter to advance pattern until finished"
-  getLine
-  mapM (playAndWait d1) ps
-  putStrLn "Finished"
+  Right t <- createTransport "127.0.0.1" "10501" defaultTCPParameters
+  node <- newLocalNode t initRemoteTable
+  runProcess node $ do
+    -- Spawn another worker on the local node
+    echoPid <- spawnLocal $ forever $ do
+      -- Test our matches in order against each message in the queue
+      receiveWait [match logMessage, match replyBack]
+
+    -- The `say` function sends a message to a process registered as "logger".
+    -- By default, this process simply loops through its mailbox and sends
+    -- any received log message strings it finds to stderr.
+
+    say "send some messages!"
+    send echoPid "hello"
+    self <- getSelfPid
+    send echoPid (self, "hello")
+
+    -- `expectTimeout` waits for a message or times out after "delay"
+    m <- expectTimeout 1000000
+    case m of
+      -- Die immediately - throws a ProcessExitException with the given reason.
+      Nothing  -> die "nothing came back!"
+      Just s -> say $ "got " ++ s ++ " back!"
