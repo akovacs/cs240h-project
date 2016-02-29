@@ -38,9 +38,11 @@ executable parseini-exe
   ghc-options:         -Wall -fno-warn-unused-do-bind -fno-warn-missing-signatures -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
                      , parseini
+                     , attoparsec
                      , bytestring
                      , containers
-                     , attoparsec
+                     , distributed-process
+                     , network-transport-tcp
                      , tidal
   default-language:    Haskell2010
 
