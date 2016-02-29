@@ -24,6 +24,7 @@ library
                      , bytestring
                      , containers
                      , distributed-process
+                     , distributed-process-simplelocalnet
                      , hint
                      , network-transport-tcp
                      , tidal
@@ -42,6 +43,7 @@ executable parseini-exe
                      , bytestring
                      , containers
                      , distributed-process
+                     , distributed-process-simplelocalnet
                      , network-transport-tcp
                      , tidal
   default-language:    Haskell2010

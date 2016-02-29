@@ -5,6 +5,7 @@ packages:
 extra-deps:
 - attoparsec-0.13.0.1
 - distributed-process-0.6.0
+- distributed-process-simplelocalnet-0.2.3.2
 - distributed-static-0.3.4.0
 - happstack-lite-7.3.6
 - hmt-0.15
