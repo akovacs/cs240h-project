@@ -20,10 +20,12 @@ library
   hs-source-dirs:      src
   exposed-modules:     ParseIni, PrettyPrintIni
   build-depends:       base >= 4.7 && < 5
+                     , attoparsec
                      , bytestring
                      , containers
-                     , attoparsec
+                     , distributed-process
                      , hint
+                     , network-transport-tcp
                      , tidal
                      , transformers
                      , websockets >= 0.9.5

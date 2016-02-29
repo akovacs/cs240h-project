@@ -3,8 +3,9 @@ extra-package-dbs: []
 packages:
 - '.'
 extra-deps:
-- PortMidi-0.1.5.2
 - attoparsec-0.13.0.1
+- distributed-process-0.6.0
+- distributed-static-0.3.4.0
 - happstack-lite-7.3.6
 - hmt-0.15
 - hosc-0.14.1
@@ -14,8 +15,9 @@ extra-deps:
 - hspec-expectations-0.7.2
 - mersenne-random-pure64-0.2.0.4
 - multiset-comb-0.2.4
+- network-transport-tcp-0.5.1
 - permutation-0.5.0.5
-- serialport-0.4.7
+- rank1dynamic-0.3.2.0
 - text-1.2.2.0
 - tidal-0.6
 - vector-0.11.0.0
