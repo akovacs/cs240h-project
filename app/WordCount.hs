@@ -9,6 +9,7 @@ module Main where
 import MapReduce
 
 import qualified Data.ByteString.Char8 as B
+import qualified Data.Map as Map
 import qualified Data.Text.IO as Text
 import System.Exit
 
@@ -20,7 +21,7 @@ main = do
     fileContents <- B.getContents
     -- split input into words based on whitespace delimiter
     --let docsAndWords = zip (repeat (0::Int)) (B.words fileContents)
-    let docsAndWords = [(0::Int, fileContents)]
+    let docsAndWords = Map.fromList [(0::Int, fileContents)]
 
     -- run word count on the input
     let wordCount = mapReduce countWords sumCounts docsAndWords
