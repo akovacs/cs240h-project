@@ -18,17 +18,19 @@ main = do
     -- take in input
     --lines <- fmap Text.lines (Text.readFile "test.txt")
     fileContents <- B.getContents
-    let words = B.splitWith (\char -> char ==' ' || char =='\n') fileContents
+    -- split input into words based on whitespace delimiter
+    --let docsAndWords = zip (repeat (0::Int)) (B.words fileContents)
+    let docsAndWords = [(0::Int, fileContents)]
 
     -- run word count on the input
-    let wordCount = mapReduce countWords sumCounts [words]
+    let wordCount = mapReduce countWords sumCounts docsAndWords
     putStrLn (show wordCount) >> exitSuccess
 
 
--- Mapper takes input, outputs list of (key, value) tuples
-countWords :: [B.ByteString] -> [(B.ByteString, Int)]
-countWords = map (\word -> (word, 1))
+-- Mapper takes input of (docid, docContents); outputs list of (word, count=1) tuples
+countWords :: (Int, B.ByteString) -> [(B.ByteString, Int)]
+countWords (fileIndex, fileContents) = map (\word -> (word, 1)) (B.words fileContents)
 
--- Reducer takes key and list of values as input
-sumCounts :: B.ByteString -> [Int] -> [Int]
-sumCounts _ counts = [sum counts]
+-- Reducer takes key=word and list of counts as input, outputs total count of that word
+sumCounts :: B.ByteString -> [Int] -> Int
+sumCounts _ counts = sum counts
