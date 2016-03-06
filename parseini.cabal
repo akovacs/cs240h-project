@@ -18,7 +18,7 @@ extra-source-files:
 
 library
   hs-source-dirs:      src
-  exposed-modules:     ParseIni, PrettyPrintIni, MapReduce
+  exposed-modules:     ParseIni, PrettyPrintIni, MapReduce, DistributedMapReduce
   build-depends:       base >= 4.7 && < 5
                      , attoparsec
                      , bytestring
@@ -34,8 +34,8 @@ library
   ghc-options:         -Wall -fno-warn-unused-do-bind -fno-warn-missing-signatures
 
 executable mapreduce
-  hs-source-dirs:      src
-  main-is:             DistributedMapReduce.hs
+  hs-source-dirs:      app
+  main-is:             Main.hs
   ghc-options:         -Wall -fno-warn-unused-do-bind -fno-warn-missing-signatures -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
                      , attoparsec

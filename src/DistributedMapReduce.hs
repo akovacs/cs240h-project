@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module DistributedMapReduce (main) where
+module DistributedMapReduce where
 
 import System.Environment (getArgs)
 import Control.Concurrent (threadDelay)
@@ -22,24 +22,6 @@ logMessage msg = do
 
 
 remotable ['replyBack, 'logMessage]
-
-myRemoteTable :: RemoteTable
-myRemoteTable = DistributedMapReduce.__remoteTable initRemoteTable
-
-
-main :: IO ()
-main = do
-  args <- getArgs
-
-  case args of
-    ["master", host, port] -> do
-      backend <- initializeBackend host port myRemoteTable
-      startMaster backend $ \slaves -> do
-        result <- master backend slaves
-        liftIO $ print result
-    ["slave", host, port] -> do
-      backend <- initializeBackend host port myRemoteTable
-      startSlave backend
 
 
 master :: Backend -> [NodeId] -> Process Integer
