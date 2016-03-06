@@ -4,19 +4,16 @@ module DistributedMapReduce (main) where
 
 import System.Environment (getArgs)
 import Control.Concurrent (threadDelay)
-import Control.Monad (forever)
+import Control.Monad (forever, forM_)
 import Control.Distributed.Process
 import Control.Distributed.Process.Closure
 import Control.Distributed.Process.Node
 import Control.Distributed.Process.Backend.SimpleLocalnet
 import Network.Transport.TCP (createTransport, defaultTCPParameters)
 
-
-sampleTask :: (Int, String) -> Process ()
-sampleTask (secondsDelay, outputString) = liftIO (threadDelay (secondsDelay * 1000000)) >> say outputString
-
-replyBack :: (ProcessId, String) -> Process ()
-replyBack (sender, msg) = send sender msg
+-- Forward the provided number to "recipient"
+replyBack :: (ProcessId, Integer) -> Process ()
+replyBack (recipient, num) = send recipient num
 
 logMessage :: String -> Process ()
 logMessage msg = do 
@@ -24,7 +21,7 @@ logMessage msg = do
   say $ "handling " ++ msg
 
 
-remotable ['sampleTask, 'logMessage]
+remotable ['replyBack, 'logMessage]
 
 myRemoteTable :: RemoteTable
 myRemoteTable = DistributedMapReduce.__remoteTable initRemoteTable
@@ -36,34 +33,46 @@ main = do
 
   case args of
     ["master", host, port] -> do
-      backend <- initializeBackend host port initRemoteTable
-      startMaster backend (master backend)
+      backend <- initializeBackend host port myRemoteTable
+      startMaster backend $ \slaves -> do
+        result <- master backend slaves
+        liftIO $ print result
     ["slave", host, port] -> do
-      backend <- initializeBackend host port initRemoteTable
+      backend <- initializeBackend host port myRemoteTable
       startSlave backend
 
 
-master :: Backend -> [NodeId] -> Process ()
+master :: Backend -> [NodeId] -> Process Integer
 master backend slaves = do
   -- Print list of slaves
   liftIO . putStrLn $ "Slaves: " ++ show slaves
-  -- Start heartbeat process on all slaves
-  heartbeatPids <- mapM startHeartbeatListener slaves
-  _ <- mapM sendHeartbeat heartbeatPids
+  -- Get index of each slave
+  let numSlaves = length slaves
+  let slavesAndIndices = zip [1 .. numSlaves] slaves
+
+  -- Start replyBack process on all slaves
+  spawnLocal $ forM_ slavesAndIndices execRemote
+  --echoPids <- mapM execRemote slavesAndIndices
+  
   -- Terminate the slaves when the master terminates (this is optional)
-  liftIO $ threadDelay 2000000
-  terminateAllSlaves backend
+  --liftIO $ threadDelay 2000000
+  --terminateAllSlaves backend
+  getReplies numSlaves
 
--- Heartbeat process just echoes message
-startHeartbeatListener :: NodeId -> Process ProcessId
-startHeartbeatListener nodeId = spawnLocal $ logMessage "using spawnLocal"
---startHeartbeatListener nodeId = spawn nodeId $ $(mkClosure 'logMessage) ("using spawn")
 
--- Send heartbeat
-sendHeartbeat :: ProcessId -> Process()
-sendHeartbeat receiverProcessId = send receiverProcessId "hello"
+-- Send the slave a number which they will return to me.
+execRemote (number, slave) = do
+  me <- getSelfPid
+  them <- spawn slave ($(mkClosure 'replyBack) (me, number))
+  return ()
 
--- Initially Slave just echoes heartbeat message
-slave :: Backend -> Process()
-slave backend = forever $ do
-  receiveWait [match logMessage, match replyBack]
+-- Wait for reply from all slaves
+getReplies :: Int -> Process Integer
+getReplies numSlaves = wait numSlaves
+  where
+    wait :: Int -> Process Integer
+    wait 0 = return 0
+    wait repliesRemaining = do
+      result <- expect
+      liftIO $ print (result::Integer)
+      wait (repliesRemaining - 1)
