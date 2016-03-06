@@ -13,7 +13,9 @@ import Network.Transport.TCP (createTransport, defaultTCPParameters)
 
 -- Forward the provided number to "recipient"
 replyBack :: (ProcessId, Integer) -> Process ()
-replyBack (recipient, num) = send recipient num
+replyBack (recipient, num) = do
+  liftIO $ print ("Slave forwarding " ++ (show num))
+  send recipient num
 
 logMessage :: String -> Process ()
 logMessage msg = do 
@@ -26,14 +28,16 @@ remotable ['replyBack, 'logMessage]
 
 master :: Backend -> [NodeId] -> Process Integer
 master backend slaves = do
+  me <- getSelfPid
   -- Print list of slaves
   liftIO . putStrLn $ "Slaves: " ++ show slaves
   -- Get index of each slave
   let numSlaves = length slaves
   let slavesAndIndices = zip [1 .. numSlaves] slaves
+  liftIO $ print slavesAndIndices
 
   -- Start replyBack process on all slaves
-  spawnLocal $ forM_ slavesAndIndices execRemote
+  spawnLocal $ forM_ slavesAndIndices $ execRemote me
   --echoPids <- mapM execRemote slavesAndIndices
   
   -- Terminate the slaves when the master terminates (this is optional)
@@ -43,10 +47,10 @@ master backend slaves = do
 
 
 -- Send the slave a number which they will return to me.
-execRemote (number, slave) = do
-  me <- getSelfPid
+execRemote me (number, slave) = do
+  liftIO $ print number
   them <- spawn slave ($(mkClosure 'replyBack) (me, number))
-  return ()
+  reconnect them
 
 -- Wait for reply from all slaves
 getReplies :: Int -> Process Integer
@@ -56,5 +60,5 @@ getReplies numSlaves = wait numSlaves
     wait 0 = return 0
     wait repliesRemaining = do
       result <- expect
-      liftIO $ print (result::Integer)
+      liftIO $ print ("Master Received Reply:" ++ (show (result::Integer)))
       wait (repliesRemaining - 1)
