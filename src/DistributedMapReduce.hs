@@ -7,7 +7,6 @@ import Control.Concurrent (threadDelay)
 import Control.Monad (forever, forM_)
 import Control.Distributed.Process
 import Control.Distributed.Process.Closure
-import Control.Distributed.Process.Node
 import Control.Distributed.Process.Backend.SimpleLocalnet
 import Network.Transport.TCP (createTransport, defaultTCPParameters)
 
@@ -15,6 +14,7 @@ import Network.Transport.TCP (createTransport, defaultTCPParameters)
 replyBack :: (ProcessId, Integer) -> Process ()
 replyBack (recipient, num) = do
   liftIO $ print ("Slave forwarding " ++ (show num))
+  --send recipient (1::Integer)
   send recipient num
 
 logMessage :: String -> Process ()
@@ -23,7 +23,7 @@ logMessage msg = do
   say $ "handling " ++ msg
 
 
-remotable ['replyBack, 'logMessage]
+remotable ['replyBack]
 
 
 master :: Backend -> [NodeId] -> Process Integer
@@ -33,11 +33,12 @@ master backend slaves = do
   liftIO . putStrLn $ "Slaves: " ++ show slaves
   -- Get index of each slave
   let numSlaves = length slaves
-  let slavesAndIndices = zip [1 .. numSlaves] slaves
+  let slavesAndIndices = (zip [1 .. numSlaves] slaves)
   liftIO $ print slavesAndIndices
 
   -- Start replyBack process on all slaves
   spawnLocal $ forM_ slavesAndIndices $ execRemote me
+    
   --echoPids <- mapM execRemote slavesAndIndices
   
   -- Terminate the slaves when the master terminates (this is optional)
@@ -45,12 +46,12 @@ master backend slaves = do
   --terminateAllSlaves backend
   getReplies numSlaves
 
-
 -- Send the slave a number which they will return to me.
 execRemote me (number, slave) = do
   liftIO $ print number
-  them <- spawn slave ($(mkClosure 'replyBack) (me, number))
+  them <- spawn slave ($(mkClosure 'replyBack) (me, (toInteger number)))
   reconnect them
+
 
 -- Wait for reply from all slaves
 getReplies :: Int -> Process Integer
