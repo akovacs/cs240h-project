@@ -13,6 +13,7 @@ type Mapper inputKey inputValue reduceKey intermediateValue
 -- Reducer takes key, list of values, and folds those values into single value
 type Reducer reduceKey reduceValue = reduceKey -> [reduceValue] -> reduceValue
 
+-- Single-node mapReduce implementation
 mapReduce :: (Ord reduceKey) => Mapper inputKey inputValue reduceKey reduceValue
                              -> Reducer reduceKey reduceValue
                              -> Map.Map inputKey inputValue

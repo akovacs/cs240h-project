@@ -18,7 +18,7 @@ extra-source-files:
 
 library
   hs-source-dirs:      src
-  exposed-modules:     ParseIni, PrettyPrintIni, MapReduce
+  exposed-modules:     ParseIni, PrettyPrintIni, MapReduce, DistributedMapReduce
   build-depends:       base >= 4.7 && < 5
                      , attoparsec
                      , bytestring
@@ -35,7 +35,7 @@ library
 
 executable wordcount
   hs-source-dirs:      app
-  main-is:             WordCount.hs
+  main-is:             Main.hs
   ghc-options:         -Wall -fno-warn-unused-do-bind -fno-warn-missing-signatures -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
                      , attoparsec
@@ -49,22 +49,6 @@ executable wordcount
                      , network-transport-tcp
                      , hint
                      , text
-                     , tidal
-  default-language:    Haskell2010
-
-
-executable parseini-exe
-  hs-source-dirs:      app
-  main-is:             Main.hs
-  ghc-options:         -Wall -fno-warn-unused-do-bind -fno-warn-missing-signatures -threaded -rtsopts -with-rtsopts=-N
-  build-depends:       base
-                     , parseini
-                     , attoparsec
-                     , bytestring
-                     , containers
-                     , distributed-process
-                     , distributed-process-simplelocalnet
-                     , network-transport-tcp
                      , tidal
   default-language:    Haskell2010
 
