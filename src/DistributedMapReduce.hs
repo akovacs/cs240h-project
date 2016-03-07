@@ -11,11 +11,21 @@ import Control.Distributed.Process.Backend.SimpleLocalnet
 import Network.Transport.TCP (createTransport, defaultTCPParameters)
 
 -- Forward the provided number to "recipient"
-replyBack :: (ProcessId, Integer) -> Process ()
-replyBack (recipient, num) = do
-  liftIO $ print ("Slave forwarding " ++ (show num))
-  --send recipient (1::Integer)
-  send recipient num
+replyBack :: (ProcessId, ProcessId) -> Process ()
+replyBack (master, workQueue) = do
+  me <- getSelfPid
+  requestWork me workQueue master
+
+requestWork me workQueue master = do
+  -- request work from master's queue
+  send workQueue me
+  -- execute work task, otherwise terminate
+  receiveWait
+    [ match $ \num -> do
+        liftIO $ print ("Slave forwarding " ++ (show (num::Integer)))
+        send master num >> requestWork me workQueue master
+    , match $ \() -> return ()
+    ]
 
 logMessage :: String -> Process ()
 logMessage msg = do 
@@ -31,33 +41,38 @@ master backend slaves = do
   me <- getSelfPid
   -- Print list of slaves
   liftIO . putStrLn $ "Slaves: " ++ show slaves
-  -- Get index of each slave
-  let numSlaves = length slaves
-  let slavesAndIndices = (zip [1 .. numSlaves] slaves)
-  liftIO $ print slavesAndIndices
+  let numTasks = 10::Integer
+  workQueue <- spawnLocal $ do
+    -- generate list of tasks
+    forM_ [1 .. numTasks] $ \num -> do
+      -- wait for worker to request next task
+      worker <- expect
+      send worker num
 
+    -- when workers finished processing work, kill them
+    forever $ do
+      worker <- expect
+      send worker ()
+      
   -- Start replyBack process on all slaves
-  spawnLocal $ forM_ slavesAndIndices $ execRemote me
+  spawnLocal $ forM_ slaves $ startListener me workQueue
     
-  --echoPids <- mapM execRemote slavesAndIndices
-  
   -- Terminate the slaves when the master terminates (this is optional)
   --liftIO $ threadDelay 2000000
   --terminateAllSlaves backend
-  getReplies numSlaves
+  getReplies numTasks
 
--- Send the slave a number which they will return to me.
-execRemote me (number, slave) = do
-  liftIO $ print number
-  them <- spawn slave ($(mkClosure 'replyBack) (me, (toInteger number)))
+-- start replyBack process on slave which pulls tasks from master's workQueue
+startListener me workQueue slave = do
+  them <- spawn slave ($(mkClosure 'replyBack) (me, workQueue))
   reconnect them
 
 
 -- Wait for reply from all slaves
-getReplies :: Int -> Process Integer
+getReplies :: Integer -> Process Integer
 getReplies numSlaves = wait numSlaves
   where
-    wait :: Int -> Process Integer
+    wait :: Integer -> Process Integer
     wait 0 = return 0
     wait repliesRemaining = do
       result <- expect
