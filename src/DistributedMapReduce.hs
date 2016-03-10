@@ -83,7 +83,7 @@ master backend slaves = do
   -- Terminate the slaves when the master terminates (this is optional)
   --liftIO $ threadDelay 2000000
   --terminateAllSlaves backend
-  getReplies numTasks
+  getReplies numTasks []
   --partials <- replicateM numTasks expect
   --forM_ partials $ \result -> do
   --  liftIO $ print result
@@ -97,12 +97,16 @@ startListener me workQueue mapperClosure slave = do
 
 
 -- Wait for reply from all slaves
-getReplies :: Int -> Process Int
-getReplies numSlaves = wait numSlaves
+getReplies :: Int -> [(B.ByteString, [Int])] -> Process Int
+getReplies repliesRemaining accumulated = wait repliesRemaining accumulated
   where
-    wait :: Int -> Process Int
-    wait 0 = return 0
-    wait repliesRemaining = do
-      result <- expect :: Process [(B.ByteString, Int)]
-      liftIO . putStrLn $ "Master Received Reply:" ++ (show result)
-      wait (repliesRemaining - 1)
+    wait :: Int -> [(B.ByteString, [Int])]-> Process Int
+    wait 0 _ = return 0
+      -- reduce reducer . groupByKey
+    wait repliesRemaining sofar = do
+      keyValuePairs <- expect :: Process [(B.ByteString, Int)]
+      liftIO . putStrLn $ "Master Received Reply:" ++ (show keyValuePairs)
+      let valuesToList = asList keyValuePairs
+      wait (repliesRemaining - 1) (sofar ++ valuesToList)
+
+asList keyValuePairs = [(key, [value]) | (key, value) <- keyValuePairs]
