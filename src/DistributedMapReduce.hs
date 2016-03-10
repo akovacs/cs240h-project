@@ -4,7 +4,7 @@ module DistributedMapReduce where
 
 import System.Environment (getArgs)
 import Control.Concurrent (threadDelay)
-import Control.Monad (forever, forM_)
+import Control.Monad (forever, forM_, replicateM)
 import Control.Distributed.Process
 import Control.Distributed.Process.Closure
 import Control.Distributed.Process.Backend.SimpleLocalnet
@@ -37,10 +37,13 @@ requestWork me master workQueue mapper = do
   -- execute work task, otherwise terminate
   receiveWait
     [ match $ \(key, value) -> do
-        liftIO $ print ("Slave executing mapper for " ++ (show (key::Int)))
+        liftIO . putStrLn $ "Slave executing mapper for " ++ (show (key::Int))
         let result = mapper (key, value)
         send master result >> requestWork me master workQueue mapper
     , match $ \() -> return ()
+    , matchAny $ \message -> do
+        liftIO . putStrLn $ "Slave received unknown message " ++ (show message)
+        return ()
     ]
 
 logMessage :: String -> Process ()
@@ -52,19 +55,21 @@ logMessage msg = do
 remotable ['mapperWorker, 'countWordsWrapper]
 
 
-master :: Backend -> [NodeId] -> Process Integer
+master :: Backend -> [NodeId] -> Process Int
 master backend slaves = do
   me <- getSelfPid
   -- Print list of slaves
   liftIO . putStrLn $ "Slaves: " ++ show slaves
-  let numTasks = 10::Integer
-  let inputs = zip [1 .. numTasks] (cycle ["a","b","c"])
+  let numTasks = 10::Int
+  let inputs = zip [1 .. numTasks] (cycle $ map B.pack ["a","b","c"])
+  liftIO . putStrLn $ "Initialize WorkQueue"
   workQueue <- spawnLocal $ do
     -- generate list of tasks
     forM_ inputs $ \(key, value) -> do
       -- wait for worker to request next task
       worker <- expect
-      send worker (key, value)
+      liftIO . putStrLn $ "Send task " ++ (show (key, value)) ++ " to worker " ++ (show worker)
+      send worker ((key, value)::(Int,B.ByteString))
 
     -- when workers finished processing work, kill them
     forever $ do
@@ -79,6 +84,10 @@ master backend slaves = do
   --liftIO $ threadDelay 2000000
   --terminateAllSlaves backend
   getReplies numTasks
+  --partials <- replicateM numTasks expect
+  --forM_ partials $ \result -> do
+  --  liftIO $ print result
+  --return 0
 
 
 -- start mapperWorker process on slave which pulls tasks from master's workQueue
@@ -88,12 +97,12 @@ startListener me workQueue mapperClosure slave = do
 
 
 -- Wait for reply from all slaves
-getReplies :: Integer -> Process Integer
+getReplies :: Int -> Process Int
 getReplies numSlaves = wait numSlaves
   where
-    wait :: Integer -> Process Integer
+    wait :: Int -> Process Int
     wait 0 = return 0
     wait repliesRemaining = do
-      result <- expect
-      liftIO $ print ("Master Received Reply:" ++ (show (result)))
+      result <- expect :: Process [(B.ByteString, Int)]
+      liftIO . putStrLn $ "Master Received Reply:" ++ (show result)
       wait (repliesRemaining - 1)
