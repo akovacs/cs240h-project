@@ -1,13 +1,21 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 import System.Environment (getArgs)
 import Control.Distributed.Process
-import Control.Distributed.Process.Closure
 import Control.Distributed.Process.Node
 import Control.Distributed.Process.Backend.SimpleLocalnet
-import Network.Transport.TCP (createTransport, defaultTCPParameters)
+import qualified DistributedMapReduce hiding (__remoteTable)
+
+import qualified Data.ByteString.Char8 as B
+import qualified Data.Map as Map
 import qualified DistributedMapReduce
+import qualified MapReduce
+import qualified WordCount
 
 myRemoteTable :: RemoteTable
-myRemoteTable = DistributedMapReduce.__remoteTable initRemoteTable
+myRemoteTable = DistributedMapReduce.__remoteTable 
+              . WordCount.__remoteTable
+              $ initRemoteTable
 
 main :: IO ()
 main = do
@@ -17,7 +25,7 @@ main = do
     ["master", host, port] -> do
       backend <- initializeBackend host port myRemoteTable
       startMaster backend $ \slaves -> do
-        result <- DistributedMapReduce.master backend slaves
+        result <- DistributedMapReduce.master backend slaves WordCount.countWordsMapperClosure
         liftIO $ print result
     ["slave", host, port] -> do
       backend <- initializeBackend host port myRemoteTable

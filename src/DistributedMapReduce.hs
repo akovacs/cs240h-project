@@ -14,20 +14,10 @@ import qualified Data.ByteString.Char8 as B
 import qualified Data.Map as Map
 import qualified MapReduce
 
-
--- Mapper takes input of (docid, docContents); outputs list of (word, count=1) tuples
-countWords :: (Int, B.ByteString) -> [(B.ByteString, Int)]
-countWords (fileIndex, fileContents) = map (\word -> (word, 1)) (B.words fileContents)
-
-countWordsWrapper :: () -> MapReduce.Mapper Int B.ByteString B.ByteString Int
-countWordsWrapper () = countWords
-
 -- Reducer takes key=word and list of counts as input, outputs total count of that word
 sumCounts :: B.ByteString -> [Int] -> Int
 sumCounts _ counts = sum counts
 
-
-reduce reducer = Map.mapWithKey reducer
 
 -- Forward the provided number to "recipient"
 -- TODO: make Mapper take more generic types, eg: Serializable
@@ -52,17 +42,14 @@ requestWork me master workQueue mapper = do
         return ()
     ]
 
-logMessage :: String -> Process ()
-logMessage msg = do 
-  liftIO $ putStrLn msg
-  say $ "handling " ++ msg
+remotable ['mapperWorker]
 
 
-remotable ['mapperWorker, 'countWordsWrapper]
-
-
-master :: Backend -> [NodeId] -> Process (Map.Map B.ByteString Int)
-master backend slaves = do
+master :: Backend -> [NodeId]
+                  -> Closure (MapReduce.Mapper Int B.ByteString B.ByteString Int)
+                  -- -> MapReduce.Reducer B.ByteString Int
+                  -> Process (Map.Map B.ByteString Int)
+master backend slaves mapperClosure = do
   me <- getSelfPid
   -- Print list of slaves
   liftIO . putStrLn $ "Slaves: " ++ show slaves
@@ -83,7 +70,6 @@ master backend slaves = do
       send worker ()
       
   -- Start mapperWorker process on all slaves
-  let mapperClosure = ($(mkClosure 'countWordsWrapper) ())
   spawnLocal $ forM_ slaves $ startListener me workQueue mapperClosure
     
   -- Terminate the slaves when the master terminates (this is optional)
@@ -94,11 +80,6 @@ master backend slaves = do
   let result = reduce sumCounts groupedByKey
   liftIO . putStrLn $ "Master reduces result to " ++ (show result)
   return $ result
-  
-  --partials <- replicateM numTasks expect
-  --forM_ partials $ \result -> do
-  --  liftIO $ print result
-  --return 0
 
 
 -- start mapperWorker process on slave which pulls tasks from master's workQueue
@@ -119,6 +100,9 @@ getReplies repliesRemaining accumulated = wait repliesRemaining accumulated
       liftIO . putStrLn $ "Master Received Reply:" ++ (show keyValuePairs)
       let addedValues = asList keyValuePairs
       wait (repliesRemaining - 1) (partialResults ++ addedValues)
+
+
+reduce reducer = Map.mapWithKey reducer
 
 groupByKey = Map.fromListWith (++)
 
