@@ -22,6 +22,12 @@ countWords (fileIndex, fileContents) = map (\word -> (word, 1)) (B.words fileCon
 countWordsWrapper :: () -> MapReduce.Mapper Int B.ByteString B.ByteString Int
 countWordsWrapper () = countWords
 
+-- Reducer takes key=word and list of counts as input, outputs total count of that word
+sumCounts :: B.ByteString -> [Int] -> Int
+sumCounts _ counts = sum counts
+
+
+reduce reducer = Map.mapWithKey reducer
 
 -- Forward the provided number to "recipient"
 -- TODO: make Mapper take more generic types, eg: Serializable
@@ -55,7 +61,7 @@ logMessage msg = do
 remotable ['mapperWorker, 'countWordsWrapper]
 
 
-master :: Backend -> [NodeId] -> Process Int
+master :: Backend -> [NodeId] -> Process (Map.Map B.ByteString Int)
 master backend slaves = do
   me <- getSelfPid
   -- Print list of slaves
@@ -83,7 +89,12 @@ master backend slaves = do
   -- Terminate the slaves when the master terminates (this is optional)
   --liftIO $ threadDelay 2000000
   --terminateAllSlaves backend
-  getReplies numTasks []
+  groupedByKey <- getReplies numTasks []
+  -- return $ reduce reducer groupedByKey
+  let result = reduce sumCounts groupedByKey
+  liftIO . putStrLn $ "Master reduces result to " ++ (show result)
+  return $ result
+  
   --partials <- replicateM numTasks expect
   --forM_ partials $ \result -> do
   --  liftIO $ print result
@@ -97,16 +108,18 @@ startListener me workQueue mapperClosure slave = do
 
 
 -- Wait for reply from all slaves
-getReplies :: Int -> [(B.ByteString, [Int])] -> Process Int
+getReplies :: Int -> [(B.ByteString, [Int])] -> Process (Map.Map B.ByteString [Int])
 getReplies repliesRemaining accumulated = wait repliesRemaining accumulated
   where
-    wait :: Int -> [(B.ByteString, [Int])]-> Process Int
-    wait 0 _ = return 0
+    wait :: Int -> [(B.ByteString, [Int])]-> Process (Map.Map B.ByteString [Int])
+    wait 0 fullResults = return $ groupByKey fullResults
       -- reduce reducer . groupByKey
-    wait repliesRemaining sofar = do
+    wait repliesRemaining partialResults = do
       keyValuePairs <- expect :: Process [(B.ByteString, Int)]
       liftIO . putStrLn $ "Master Received Reply:" ++ (show keyValuePairs)
-      let valuesToList = asList keyValuePairs
-      wait (repliesRemaining - 1) (sofar ++ valuesToList)
+      let addedValues = asList keyValuePairs
+      wait (repliesRemaining - 1) (partialResults ++ addedValues)
+
+groupByKey = Map.fromListWith (++)
 
 asList keyValuePairs = [(key, [value]) | (key, value) <- keyValuePairs]
