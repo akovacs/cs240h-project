@@ -9,7 +9,6 @@ import qualified DistributedMapReduce hiding (__remoteTable)
 import qualified Data.ByteString.Char8 as B
 import qualified Data.Map as Map
 import qualified DistributedMapReduce
-import qualified MapReduce
 import qualified WordCount
 
 myRemoteTable :: RemoteTable
@@ -25,7 +24,7 @@ main = do
     ["master", host, port] -> do
       backend <- initializeBackend host port myRemoteTable
       startMaster backend $ \slaves -> do
-        result <- DistributedMapReduce.master backend slaves WordCount.countWordsMapperClosure
+        result <- DistributedMapReduce.master backend slaves WordCount.countWordsMapperClosure WordCount.sumCounts
         liftIO $ print result
     ["slave", host, port] -> do
       backend <- initializeBackend host port myRemoteTable

@@ -14,12 +14,10 @@ import qualified Data.ByteString.Char8 as B
 import qualified Data.Map as Map
 import qualified MapReduce
 
--- Reducer takes key=word and list of counts as input, outputs total count of that word
-sumCounts :: B.ByteString -> [Int] -> Int
-sumCounts _ counts = sum counts
 
-
--- Forward the provided number to "recipient"
+-- Request new work unit from the master's workQueue, apply the
+-- mapper closure to it, then send back to master the result of
+-- executing the mapper.
 -- TODO: make Mapper take more generic types, eg: Serializable
 mapperWorker :: (ProcessId, ProcessId, Closure (MapReduce.Mapper Int B.ByteString B.ByteString Int)) -> Process ()
 mapperWorker (master, workQueue, mapperClosure) = do
@@ -47,9 +45,9 @@ remotable ['mapperWorker]
 
 master :: Backend -> [NodeId]
                   -> Closure (MapReduce.Mapper Int B.ByteString B.ByteString Int)
-                  -- -> MapReduce.Reducer B.ByteString Int
+                  -> MapReduce.Reducer B.ByteString Int
                   -> Process (Map.Map B.ByteString Int)
-master backend slaves mapperClosure = do
+master backend slaves mapperClosure reducer = do
   me <- getSelfPid
   -- Print list of slaves
   liftIO . putStrLn $ "Slaves: " ++ show slaves
@@ -73,11 +71,9 @@ master backend slaves mapperClosure = do
   spawnLocal $ forM_ slaves $ startListener me workQueue mapperClosure
     
   -- Terminate the slaves when the master terminates (this is optional)
-  --liftIO $ threadDelay 2000000
-  --terminateAllSlaves backend
   groupedByKey <- getReplies numTasks []
   -- return $ reduce reducer groupedByKey
-  let result = reduce sumCounts groupedByKey
+  let result = reduce reducer groupedByKey
   liftIO . putStrLn $ "Master reduces result to " ++ (show result)
   return $ result
 
