@@ -7,31 +7,35 @@
 
 module WordCount where
 
-import Control.Distributed.Process
 import Control.Distributed.Process.Closure
 
 import MapReduce
 
 import qualified Data.ByteString.Char8 as B
 import qualified Data.Map as Map
-import qualified Data.Text.IO as Text
 import System.Exit
 
+type Docid = Int
+type Term = B.ByteString
+type Count = Int
 
 -- Mapper takes input of (docid, docContents); outputs list of (word, count=1) tuples
-countWords :: (Int, B.ByteString) -> [(B.ByteString, Int)]
+countWords :: (Docid, B.ByteString) -> [(Term, Count)]
 countWords (fileIndex, fileContents) = map (\word -> (word, 1)) (B.words fileContents)
 
+
+-- Reducer takes key=word and list of counts as input, outputs total count of that word
+sumCounts :: Term -> [Count] -> Count
+sumCounts _ counts = sum counts
+
+
+-- Wrappers for passing closure and types dictionary to distributed-process
 countWordsWrapper :: () -> MapReduce.Mapper Int B.ByteString B.ByteString Int
 countWordsWrapper () = countWords
 
 remotable ['countWordsWrapper]
 
 countWordsMapperClosure = ($(mkClosure 'countWordsWrapper) ())
-
--- Reducer takes key=word and list of counts as input, outputs total count of that word
-sumCounts :: B.ByteString -> [Int] -> Int
-sumCounts _ counts = sum counts
 
 
 -- Main - parse input file, then pretty-print the result using single-node map-reduce

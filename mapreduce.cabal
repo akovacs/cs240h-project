@@ -1,4 +1,4 @@
-name:                parseini
+name:                mapreduce
 version:             0.1.0.0
 synopsis:            Stanford CS240H Final Project
 description:         Please see README.md
@@ -44,7 +44,7 @@ executable mapreduce
                      , containers
                      , distributed-process
                      , distributed-process-simplelocalnet
-                     , parseini
+                     , mapreduce
                      , network
                      , network-transport-tcp
                      , hint
@@ -63,7 +63,7 @@ executable wordcount
                      , containers
                      , distributed-process
                      , distributed-process-simplelocalnet
-                     , parseini
+                     , mapreduce
                      , network
                      , network-transport-tcp
                      , hint
@@ -76,7 +76,7 @@ executable tidal-server
   main-is:             Server.hs
   ghc-options:         -Wall -fno-warn-unused-do-bind -fno-warn-missing-signatures -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
-                     , parseini
+                     , mapreduce
                      , bytestring
                      , containers
                      , attoparsec
@@ -88,29 +88,12 @@ executable tidal-server
                      , blaze-html
   default-language:    Haskell2010
 
-executable parseini-web
-  hs-source-dirs:      app
-  main-is:             Web.hs
-  ghc-options:         -Wall -fno-warn-unused-do-bind -fno-warn-missing-signatures -threaded -rtsopts -with-rtsopts=-N
-  build-depends:       base
-                     , parseini
-                     , bytestring
-                     , containers
-                     , attoparsec
-                     , happstack-lite
-                     , hint
-                     , text
-                     , tidal
-                     , blaze-html
-
-  default-language:    Haskell2010
-
-test-suite parseini-test
+test-suite mapreduce-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Spec.hs
   build-depends:       base
-                     , parseini
+                     , mapreduce
                      , bytestring
                      , containers
                      , attoparsec
