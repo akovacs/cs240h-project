@@ -18,15 +18,17 @@ extra-source-files:
 
 library
   hs-source-dirs:      src
-  exposed-modules:     ParseIni, PrettyPrintIni, MapReduce, DistributedMapReduce
+  exposed-modules:     ParseIni, PrettyPrintIni, MapReduce, ParallelMapReduce, DistributedMapReduce
   build-depends:       base >= 4.7 && < 5
                      , attoparsec
                      , bytestring
                      , containers
+                     , deepseq
                      , distributed-process
                      , distributed-process-simplelocalnet
                      , hint
                      , network-transport-tcp
+                     , parallel
                      , tidal
                      , transformers
                      , websockets >= 0.9.5
