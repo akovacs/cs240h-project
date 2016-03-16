@@ -46,20 +46,20 @@ remotable ['mapperWorker]
 master :: Backend -> [NodeId]
                   -> Closure (MapReduce.Mapper Int B.ByteString B.ByteString Int)
                   -> MapReduce.Reducer B.ByteString Int
+                  -> Map.Map Int B.ByteString
                   -> Process (Map.Map B.ByteString Int)
-master backend slaves mapperClosure reducer = do
+master backend slaves mapperClosure reducer inputs = do
   me <- getSelfPid
   -- Print list of slaves
   liftIO . putStrLn $ "Slaves: " ++ show slaves
-  let numTasks = 10::Int
-  let inputs = zip [1 .. numTasks] (cycle $ map B.pack ["a","b","c"])
+  let numTasks = Map.size inputs
   liftIO . putStrLn $ "Initialize WorkQueue"
   workQueue <- spawnLocal $ do
     -- generate list of tasks
-    forM_ inputs $ \(key, value) -> do
+    forM_ (Map.toList inputs) $ \(key, value) -> do
       -- wait for worker to request next task
       worker <- expect
-      liftIO . putStrLn $ "Send task " ++ (show (key, value)) ++ " to worker " ++ (show worker)
+      liftIO . putStrLn $ "Send task " ++ (show key) ++ " to worker " ++ (show worker)
       send worker ((key, value)::(Int,B.ByteString))
 
     -- when workers finished processing work, kill them

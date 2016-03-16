@@ -43,10 +43,11 @@ main = do
   args <- getArgs
   case args of
     ["master", host, port] -> do
-      inputs <- liftIO $ readFiles "corpus"
+      docsAndWords <- liftIO $ readFiles "corpus"
+      liftIO . putStrLn $ "Read corpus containing " ++ (show (Map.size docsAndWords)) ++ " documents."
       backend <- initializeBackend host port myRemoteTable
       startMaster backend $ \slaves -> do
-        result <- DistributedMapReduce.master backend slaves WordCount.countWordsMapperClosure WordCount.sumCounts
+        result <- DistributedMapReduce.master backend slaves WordCount.countWordsMapperClosure WordCount.sumCounts docsAndWords
         liftIO $ print result
     ["slave", host, port] -> do
       backend <- initializeBackend host port myRemoteTable
