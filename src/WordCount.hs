@@ -8,12 +8,15 @@
 module WordCount where
 
 import Control.Distributed.Process.Closure
+import Control.Monad.Trans (liftIO)
+
+import System.Directory (getDirectoryContents)
+import System.FilePath.Posix (takeExtension)
 
 import MapReduce
 
 import qualified Data.ByteString.Char8 as B
 import qualified Data.Map as Map
-import System.Exit
 
 type Docid = Int
 type Term = B.ByteString
@@ -36,18 +39,3 @@ countWordsWrapper () = countWords
 remotable ['countWordsWrapper]
 
 countWordsMapperClosure = ($(mkClosure 'countWordsWrapper) ())
-
-
--- Main - parse input file, then pretty-print the result using single-node map-reduce
-main :: IO ()
-main = do
-    -- take in input
-    --lines <- fmap Text.lines (Text.readFile "test.txt")
-    fileContents <- B.getContents
-    -- split input into words based on whitespace delimiter
-    --let docsAndWords = zip (repeat (0::Int)) (B.words fileContents)
-    let docsAndWords = Map.fromList [(0::Int, fileContents)]
-
-    -- run word count on the input
-    let wordCount = mapReduce countWords sumCounts docsAndWords
-    putStrLn (show wordCount) >> exitSuccess

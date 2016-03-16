@@ -18,15 +18,18 @@ extra-source-files:
 
 library
   hs-source-dirs:      src
-  exposed-modules:     ParseIni, PrettyPrintIni, MapReduce, ParallelMapReduce, DistributedMapReduce
+  exposed-modules:     ParseIni, PrettyPrintIni, MapReduce, ParallelMapReduce, DistributedMapReduce, WordCount
   build-depends:       base >= 4.7 && < 5
                      , attoparsec
                      , bytestring
                      , containers
                      , deepseq
+                     , directory
                      , distributed-process
                      , distributed-process-simplelocalnet
+                     , filepath
                      , hint
+                     , mtl
                      , network-transport-tcp
                      , parallel
                      , tidal
@@ -44,28 +47,12 @@ executable mapreduce
                      , blaze-html
                      , bytestring
                      , containers
+                     , directory
                      , distributed-process
                      , distributed-process-simplelocalnet
+                     , filepath
                      , mapreduce
-                     , network
-                     , network-transport-tcp
-                     , hint
-                     , text
-                     , tidal
-  default-language:    Haskell2010
-
-executable wordcount
-  hs-source-dirs:      app
-  main-is:             Main.hs
-  ghc-options:         -Wall -fno-warn-unused-do-bind -fno-warn-missing-signatures -threaded -rtsopts -with-rtsopts=-N
-  build-depends:       base
-                     , attoparsec
-                     , blaze-html
-                     , bytestring
-                     , containers
-                     , distributed-process
-                     , distributed-process-simplelocalnet
-                     , mapreduce
+                     , mtl
                      , network
                      , network-transport-tcp
                      , hint
