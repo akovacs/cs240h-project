@@ -4,15 +4,29 @@ module DistributedMapReduce where
 
 import System.Environment (getArgs)
 import Control.Concurrent (threadDelay)
-import Control.Monad (forever, forM_, replicateM)
+import Control.Monad (forever, forM_, replicateM, liftM)
 import Control.Distributed.Process
 import Control.Distributed.Process.Closure
 import Control.Distributed.Process.Backend.SimpleLocalnet
 import Network.Transport.TCP (createTransport, defaultTCPParameters)
 
+import Sound.Tidal.Context
+
 import qualified Data.ByteString.Char8 as B
 import qualified Data.Map as Map
 import qualified MapReduce
+
+
+-- Setup tidal stream for sound
+setupTidalStream :: IO (OscPattern -> IO ())
+setupTidalStream = do
+  putStrLn "Starting Tidal Dirt Software Synth"
+  tidalStream <- dirtStream
+  return tidalStream
+
+-- Play a sound
+playSimplePattern :: (OscPattern -> t) -> String -> t
+playSimplePattern stream pattern = stream $ sound (p pattern)
 
 
 -- Request new work unit from the master's workQueue, apply the
@@ -21,17 +35,23 @@ import qualified MapReduce
 -- TODO: make Mapper take more generic types, eg: Serializable
 mapperWorker :: (ProcessId, ProcessId, Closure (MapReduce.Mapper Int B.ByteString B.ByteString Int)) -> Process ()
 mapperWorker (master, workQueue, mapperClosure) = do
+  --tidalStream <- liftM setupTidalStream
   me <- getSelfPid
   mapper <- unClosure mapperClosure
+  --requestWork me master workQueue mapper tidalStream
   requestWork me master workQueue mapper
 
 requestWork me master workQueue mapper = do
   -- request work from master's queue
+  --playSimplePattern tidalStream "bd"
   send workQueue me
+  --playSimplePattern tidalStream "silence"
   -- execute work task, otherwise terminate
   receiveWait
     [ match $ \(key, value) -> do
         liftIO . putStrLn $ "Slave executing mapper for " ++ (show (key::Int))
+        --playSimplePattern tidalStream "cp"
+        --playSimplePattern tidalStream "silence"
         let result = mapper (key, value)
         send master result >> requestWork me master workQueue mapper
     , match $ \() -> return ()
@@ -75,6 +95,7 @@ master backend slaves mapperClosure reducer inputs = do
   -- return $ reduce reducer groupedByKey
   let result = reduce reducer groupedByKey
   liftIO . putStrLn $ "Master reduces result to " ++ (show result)
+  liftIO . putStrLn $ "Done"
   return $ result
 
 

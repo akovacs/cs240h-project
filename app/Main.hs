@@ -24,8 +24,11 @@ myRemoteTable = DistributedMapReduce.__remoteTable
               . WordCount.__remoteTable
               $ initRemoteTable
 
+
+-- Convert local file paths returned by getDirectoryContents into absolute paths
 getAbsDirectoryContents :: FilePath -> IO [FilePath]
 getAbsDirectoryContents dir = getDirectoryContents dir >>= mapM (canonicalizePath . (dir </>))
+
 
 -- Read text corpus from filesystem
 readFiles :: FilePath -> IO (Map.Map Int B.ByteString)
@@ -37,7 +40,7 @@ readFiles dirPath = do
   return $ Map.fromList (zip (map fromIntegral [0..]) fileContents)
 
 
--- Different ways to run MapReduce
+-- Different ways to run MapReduce for demo
 main :: IO ()
 main = do
   args <- getArgs
