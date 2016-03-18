@@ -1,0 +1,705 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+
+\usepackage{fancyhdr}\usepackage{amsthm}\usepackage{url}
+
+%----------------------- Macros and Definitions --------------------------
+
+%%% FILL THIS OUT
+\newcommand{\studentname}{Arpad Kovacs}
+\newcommand{\suid}{akovacs}
+\newcommand{\exerciseset}{Final Project}
+%%% END
+
+
+
+\renewcommand{\theenumi}{\bf \Alph{enumi}}
+
+%\theoremstyle{plain}
+%\newtheorem{theorem}{Theorem}
+%\newtheorem{lemma}[theorem]{Lemma}
+
+\fancypagestyle{plain}{}
+
+\fancyhf{}
+\fancyhead[RO,LE]{\sffamily\bfseries\large Stanford University}
+\fancyhead[LO,RE]{\sffamily\bfseries\large CS240H Functional Systems in Haskell}
+\fancyfoot[LO,RE]{\sffamily\bfseries\large \studentname: \suid @stanford.edu}
+\fancyfoot[RO,LE]{\sffamily\bfseries\thepage}
+\renewcommand{\headrulewidth}{1pt}
+\renewcommand{\footrulewidth}{1pt}
+
+%-------------------------------- Title ----------------------------------
+
+\title{CS240H \exerciseset}
+\author{\studentname \qquad SUNet ID: \suid}
+
+%--------------------------------- Text ----------------------------------
+\end_preamble
+\use_default_options false
+\maintain_unincluded_children false
+\language english
+\language_package none
+\inputencoding auto
+\fontencoding default
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref section
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry true
+\use_package amsmath 2
+\use_package amssymb 2
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 0
+\use_package mathtools 1
+\use_package mhchem 0
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine natbib
+\cite_engine_type numerical
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle fancy
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+maketitle
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For my CS240H final project, I implemented the MapReduce abstraction in
+ Haskell, and demonstrated an example wordcount application which runs on
+ a single-node or a distributed cluster.
+\end_layout
+
+\begin_layout Section
+MapReduce Background
+\end_layout
+
+\begin_layout Standard
+MapReduce is a parallel, distributed programming model introduced by Jeff
+ Dean and Sanjay Ghemawat from Google 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "MapReduceDean2004"
+
+\end_inset
+
+.
+ The abstraction is characterized by its namesake functions: 
+\series bold
+Map
+\series default
+ processes an input key-value tuple, and outputs intermediate key-value
+ tuples.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+type Mapper inputKey inputValue intermediateKey intermediateValue =
+\end_layout
+
+\begin_layout Plain Layout
+
+(inputKey, inputValue) -> [(intermediateKey, intermediateValue)]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Reduce
+\series default
+ takes an intermedate key and list of intermediate values, and folds those
+ values into single output value.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+type Reducer reduceKey reduceValue =
+\end_layout
+
+\begin_layout Plain Layout
+
+reduceKey -> [reduceValue] -> reduceValue
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+While seemingly simple and limited, this abstraction enables the construction
+ of scalable and fault-tolerant systems for processing large quantities
+ of data in parallel.
+ Specifically, because the map operations are independent, they can be executed
+ in parallel on a shared-nothing architecture.
+ Likewise, when the reduce operation is associative, or if keys are grouped
+ to the same reducer, then reduce operations can also be parallelized.
+ The diagram below shows how the mapper and reducer can be composed into
+ a MapReduce system.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename mapreduce.eps
+	width 100text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Although the conceptual underpinnings of MapReduce are simple and elegant,
+ the available implementations at the time of this writing are quite complex
+ or inaccessible.
+ Google's original implementation remains proprietary, and therefore cannot
+ be studied beyond the details published in the previously mentioned 2004
+ OSDI paper.
+ An open-source implementation in Java named Hadoop has become popular in
+ industry, but suffers from excessive boilerplate configuration and setup
+ code.
+ Consequently, Haskell, which is a statically-typed pure functional programming
+ language, could provide the foundation for a more elegant and type-safe,
+ yet still expressive MapReduce implementation.
+\end_layout
+
+\begin_layout Section
+Single Node MapReduce Implementation
+\end_layout
+
+\begin_layout Standard
+I started by implementing MapReduce on a single-machine.
+ My implementation takes as input a single Data.Map containing the input
+ keys and values to be processed.
+ Given the earlier Mapper and Reducer definitions, I defined the single-node
+ MapReduce as:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+-- Single-node mapReduce implementation
+\end_layout
+
+\begin_layout Plain Layout
+
+mapReduce :: (Ord reduceKey)
+\end_layout
+
+\begin_layout Plain Layout
+
+          => Mapper inputKey inputValue reduceKey reduceValue
+\end_layout
+
+\begin_layout Plain Layout
+
+          -> Reducer reduceKey reduceValue
+\end_layout
+
+\begin_layout Plain Layout
+
+          -> Map.Map inputKey inputValue
+\end_layout
+
+\begin_layout Plain Layout
+
+          -> Map.Map reduceKey reduceValue
+\end_layout
+
+\begin_layout Plain Layout
+
+mapReduce mapper reducer = reduce reducer .
+ groupByKey .
+ asList .
+ mapInput mapper
+\end_layout
+
+\begin_layout Plain Layout
+
+  where mapInput mapper = concatMap mapper .
+ Map.toList
+\end_layout
+
+\begin_layout Plain Layout
+
+        asList keyValuePairs = [(key, [value]) | (key, value) <- keyValuePairs]
+\end_layout
+
+\begin_layout Plain Layout
+
+        groupByKey = Map.fromListWith (++)
+\end_layout
+
+\begin_layout Plain Layout
+
+        reduce reducer = Map.mapWithKey reducer
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This initial single-node implementation is quite concise, yet expresses
+ all the salient characteristics of the Map-Reduce paradigm.
+ Each mapper operates on tuples, therefore we transform the input Data.Map
+ into lists of tuples, and apply the mapper function to each tuple.
+ We take the resulting lists, and combine them back into a Data.Map, using
+ the concatenation operator ++ to merge lists of values that map to the
+ same key.
+ This operation is analogous to the shuffle/groupBy step of MapReduce, which
+ ensures that all values for a reduce key map to the same reducer.
+ The mapReduce function signature ensures that the output types of the mapper
+ (reduceKey and reduceValue) align with the input types of the reducer at
+ compile-time.
+ The reduceKey must be constrained by the type Ord to provide an ordering
+ of the reduce keys, since Data.Map is implemented internally as a self-balancing
+ binary tree.
+\end_layout
+
+\begin_layout Standard
+Given this framework, implementation of the wordcount application is fairly
+ straightforward.
+ Initialization code in main loads an input data corpus of 42 works by Shakespea
+re from the filesystem into a Data.Map which has document identifiers as
+ keys, and each document's contents as ASCII bytestring values.
+ Since filesystem access can be stateful, this is performed in the IO monad,
+ however the subsequent mapper and reducer computations are pure.
+\end_layout
+
+\begin_layout Standard
+The wordCount mapper operation named 
+\series bold
+countWords
+\series default
+ takes inputs tuples of (docid, docContents) and splits the document contents
+ on whitespace, emitting individual words each with a count of 1 as tuples.
+ 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+-- Mapper takes input of (docid, docContents);
+\end_layout
+
+\begin_layout Plain Layout
+
+-- outputs list of (word, count=1) tuples
+\end_layout
+
+\begin_layout Plain Layout
+
+countWords :: (Docid, B.ByteString) -> [(Term, Count)]
+\end_layout
+
+\begin_layout Plain Layout
+
+countWords (fileIndex, fileContents) =
+\end_layout
+
+\begin_layout Plain Layout
+
+  map (
+\backslash
+word -> (word, 1)) (B.words fileContents)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The MapReduce framework's groupByKey proceeds to group all tuples with the
+ same key word together, emitting reduce groups with the word as the key
+ and a list of the counts (1 for each occurrence of the word in a document)
+ as the value.
+ Finally, the 
+\series bold
+sumCounts
+\series default
+ reducer sums each list of counts, outputting the total number of occurrences
+ of the word across all documents in the corpus.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+-- Reducer takes key=word and list of counts as input;
+\end_layout
+
+\begin_layout Plain Layout
+
+-- outputs total count of that word
+\end_layout
+
+\begin_layout Plain Layout
+
+sumCounts :: Term -> [Count] -> Count
+\end_layout
+
+\begin_layout Plain Layout
+
+sumCounts _ counts = sum counts
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The final result is a Data.Map with each word occurring in the corpus as
+ the keys, and the number of appearances of that word as the value.
+\end_layout
+
+\begin_layout Section
+Distributed MapReduce Implementation
+\end_layout
+
+\begin_layout Subsection
+Distributed Framework
+\end_layout
+
+\begin_layout Standard
+Next, I added the ability to run MapReduce on a distributed cluster.
+ I initially attempted to roll my own distributed runtime, but soon ran
+ into challenges in implementing node and service discovery, message-passing,
+ as well as synchronization.
+ I subsequently looked into several preexisting distributed runtimes including
+ Glasgow Distributed Haskell 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "GlasgowDistributedHaskellPointon2001"
+
+\end_inset
+
+ and Eden 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "EdenParallelFunctionalLoogen2011"
+
+\end_inset
+
+ but found many of them to be outdated, or lacking clear examples or documentati
+on.
+ I finally settled on the Distributed-Process library, an evolution of Cloud
+ Haskell introduced by Jeff Epstein, Andrew Black, and Simon Peyton-Jones
+ 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "CloudHaskellEpstein2011"
+
+\end_inset
+
+.
+ Cloud Haskell was inspired by Erlang-style actors, which do not have shared
+ memory.
+ Instead, actors (named Processes in Cloud Haskell) communicate explicitly
+ with each other through messages.
+ The messages are sent asynchonously, and Cloud Haskell provides no guarantees
+ about the order in which messages are received.
+\end_layout
+
+\begin_layout Standard
+One of the requirements for a distributed MapReduce implementation is the
+ ability to serialize function closures, and send them to a remote node
+ for execution.
+ In my earlier homegrown distributed implementation, I attempted to accomplish
+ this by taking the string representation of the mapper and reducer functions,
+ sending them over the wire, and then compiling them into functions on-the-fly
+ using an embedded Haskell interpreter.
+ Unfortunately, this approach results in the loss of compile-time type safety,
+ which was one of the main benefits of writing code in Haskell.
+ Since GHC does not natively support serializing functions, the alternative
+ runtimes implement custom compilers or special middleware to support this
+ functionality.
+ Glasgow Distributed Haskell retrofit the runtime with a shared distributed
+ heap and distributed MVars for explicit synchronization and and communication
+ between remote I/O threads.
+ Eden augments the GHC compiler with distributed programming primitives,
+ and runs the system on top of MPI middleware to achieve distributed message
+ passing.
+\end_layout
+
+\begin_layout Standard
+In contrast, the Distributed-Process library solves the problem using a
+ different approach which does not require compiler or runtime customizations.
+ Since all nodes are assumed to run the same codebase, we can register code
+ pointers to functions to be called on remote nodes in a 
+\begin_inset Quotes eld
+\end_inset
+
+remote table
+\begin_inset Quotes erd
+\end_inset
+
+.
+ To invoke a function on a remote node, the distributed-process system creates
+ a closure, consisting of the code pointer and an environment representing
+ the inputs to the function.
+ I selected Distributed-Process as the foundation of my distributed MapReduce
+ because this seemed like the cleanest approach for remote function invocation.
+ However, the actual implementation utilizes Template Haskell and multiple
+ wrapper functions due to Distributed-Process limitations, so the final
+ codebase turned out to be considerably messier than the single-node implementat
+ion (and was also significantly harder to debug).
+\end_layout
+
+\begin_layout Subsection
+Network Topology and System Operation
+\end_layout
+
+\begin_layout Standard
+My network topology consists of a single master node which controls multiple
+ slave nodes.
+ I opted to use the SimpleLocalNet topology, which uses TCP for messages
+ and provides a simple node discovery mechanism using UDP multicast, since
+ it seemed to be the best-supported and simplest Distributed-Process network
+ topology.
+ 
+\end_layout
+
+\begin_layout Standard
+We initialize the system by starting up remote nodes in 
+\begin_inset Quotes eld
+\end_inset
+
+slave
+\begin_inset Quotes erd
+\end_inset
+
+ mode.
+ The slaves are initially idle and await further instructions from the master
+ coordinator.
+ We begin the MapReduce computation by starting up a master coordination
+ process.
+ The master coordinator first spawns a local process known as the 
+\begin_inset Quotes eld
+\end_inset
+
+workQueue
+\begin_inset Quotes erd
+\end_inset
+
+ which slaves can query for work, then reads all input data (a corpus of
+ 42 works from Shakespeare for the wordCount task) from the local filesystem,
+ and adds work units with the file index as the key and file contents as
+ the value to the workQueue.
+ The master proceeds by taking inventory of all available slaves using the
+ SimpleLocalNet UDP multicast discovery mechanism, and initializes a mapperWorke
+r process on each slave which continuously pulls the next item from the
+ workQueue, applies the map operation to it, and returns the mapped result
+ to the master process until the workQueue is exhausted.
+\end_layout
+
+\begin_layout Standard
+Since the dedicated workQueue process is responsible for dispatching work
+ units to mapperWorkers on remote slaves, after initialization the master
+ coordinator's only role is to collect the intermediate results (output
+ of the map step) from the mapperWorkers.
+ The master coordinator accumulates the intermediate results in memory until
+ all work units have been processed, at which point it proceeds to the shuffle
+ phase which groups values by key.
+ By waiting to collect all intermediate results, the master node essentially
+ creates a synchronization barrier between the map phase and subsequent
+ shuffle and reduce phases.
+ This simplifies the implementation, and ensures that the reducer successfully
+ processes all values for a given key, however it also incurs a performance
+ hit since the master must wait for any straggler mapperWorkers to complete
+ before the shuffle and reduce operations can proceed.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename architecture.eps
+	width 90text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In my initial implementation, the master node would spawn a separate slave
+ process for each work unit.
+ While this resulted in a high level of concurrency, it also exhausted resource
+ limitations (specifically memory) when the work units were large.
+ Furthermore, the master is required to push the tasks to the slaves upfront;
+ if one of the slaves is slow or dies, then the work allocated to it may
+ not be completed.
+\end_layout
+
+\begin_layout Standard
+To rectify this problem, I restructured my code so that only a single worker
+ runs on a slave at a time.
+ The work units live in the separate workQueue process on the master node.
+ The worker on each slave node requests one work unit at a time from the
+ master's workQueue, executes the mapper on the data, and pushes the result
+ back to the master.
+ If the slave does not return a completed work unit back before a timeout,
+ the work unit is put back in the workQueue, and any late responses from
+ the worker are discarded.
+ Since slaves pull work units on-demand, this achieves a rudimentary form
+ of load-balancing, where idle slaves can request additional work until
+ the work queue is exhausted.
+ The drawback of this approach is that there is slightly lower utilization
+ of the slaves, since after completing a mapper computation, the slave must
+ wait for the workQueue to send the next work unit to be processed.
+\end_layout
+
+\begin_layout Section
+Limitations and Future Work
+\end_layout
+
+\begin_layout Standard
+In my current distributed map-reduce implementation, all input data lives
+ on the master node, and is forwarded to the slaves when they request work
+ units from the workQueue.
+ This is not very efficient, as it turns the serialization and transfer
+ of the data through the network into the main bottleneck.
+ I contemplated building a distributed filesystem to solve this, however
+ implementing replication, data locality, synchronization, and error-handling
+ would be sufficient scope for another final project.
+\end_layout
+
+\begin_layout Standard
+There is also room for improvement in the master-slave network topology.
+ Since the SimpleLocalNet results in a fully-connected grid of nodes, the
+ scalability of the system is limited.
+ Observing that mapper nodes only communicate with the master node, a star
+ or tree topology with the master at the center/root may result in lower
+ networking overhead since mapper nodes would not need keep track of each
+ other.
+\end_layout
+
+\begin_layout Standard
+The current system is resilient to mapper failures; any 
+\begin_inset Quotes eld
+\end_inset
+
+dead
+\begin_inset Quotes erd
+\end_inset
+
+ mappers will timeout and fail to pull results from the workQueue or push
+ results to the master.
+ As long as the master and a single slave node remain operational, the slave's
+ mapperWorker will continue pulling uncompleted work units from the master's
+ workQueue and push completed map units to the master, so the system will
+ continue making forward progress.
+ However, the master node itself is a single point of failure in the system,
+ since it is responsible for dispatching work units, collecting intermediate
+ results, and performing the final shuffle/group/reduce operations.
+ Adding leader-election capabilities or building a peer-to-peer MapReduce
+ framework would be an interesting area of future work, although maintaining
+ distributed state across the network and handling partitions of the network
+ safely could be quite challenging.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "report"
+options "plain"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

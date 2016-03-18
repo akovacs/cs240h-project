@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="420mm"
+   height="297mm"
+   viewBox="0 0 1488.189 1052.3622"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="architecture.svg">
+  <defs
+     id="defs4">
+    <marker
+       inkscape:isstock="true"
+       style="overflow:visible"
+       id="marker4528"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Arrow1Lend">
+      <path
+         transform="matrix(-0.8,0,0,-0.8,-10,0)"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 Z"
+         id="path4530"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lend"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path4196"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 Z"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1"
+         transform="matrix(-0.8,0,0,-0.8,-10,0)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lend-5"
+       style="overflow:visible"
+       inkscape:isstock="true"
+       inkscape:collect="always">
+      <path
+         inkscape:connector-curvature="0"
+         id="path4196-5"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 Z"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1"
+         transform="matrix(-0.8,0,0,-0.8,-10,0)" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="-444.72637"
+     inkscape:cy="443.14501"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="976"
+     inkscape:window-x="0"
+     inkscape:window-y="31"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-1.6535434e-6)">
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Arrow1Lend-5)"
+       d="M 188.94225,659.61004 609.1657,427.27497"
+       id="path4187-7"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <rect
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4136"
+       width="332.16132"
+       height="302.19205"
+       x="776.28571"
+       y="105.93363" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="828.17688"
+       y="362.69199"
+       id="text4176"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4178"
+         x="828.17688"
+         y="362.69199">Coordinator</tspan></text>
+    <rect
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4136-4-6-8"
+       width="332.16132"
+       height="302.19205"
+       x="169.66547"
+       y="675.07324" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot4138-3-0-6"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       transform="translate(126.57426,571.13957)"><flowRegion
+         id="flowRegion4140-7-8-8"><rect
+           id="rect4142-5-5-4"
+           width="232.85715"
+           height="120"
+           x="95.714287"
+           y="132.3622" /></flowRegion><flowPara
+         id="flowPara4144-6-2-1">Slave Node</flowPara></flowRoot>    <circle
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path4257-7-8"
+       cx="335.74615"
+       cy="824.29108"
+       r="56.568546" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot4273-9-9"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       transform="translate(77.4517,145.36041)"><flowRegion
+         id="flowRegion4275-3-9"><rect
+           id="rect4277-3-5"
+           width="357.59399"
+           height="107.07617"
+           x="105.05586"
+           y="751.33673" /></flowRegion><flowPara
+         id="flowPara4279-7-8">Mapper Worker</flowPara></flowRoot>    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="M 766.4163,421.9458 346.19285,654.28088"
+       id="path4187"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="48.323402"
+       y="721.461"
+       id="text4451"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.88297205,-0.46942557,0.46942557,0.88297205,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan4453"
+         x="48.323402"
+         y="721.461">Send work to slave</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="-202.24109"
+       y="650.61688"
+       id="text4451-0"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.88297205,-0.46942557,0.46942557,0.88297205,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan4453-6"
+         x="-202.24109"
+         y="650.61688">Request work from queue</tspan></text>
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4522"
+       d="M 510.17076,659.61004 930.39421,427.27497"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker4528)" />
+    <text
+       transform="matrix(0.88297205,-0.46942557,0.46942557,0.88297205,0,0)"
+       sodipodi:linespacing="125%"
+       id="text4524"
+       y="797.00562"
+       x="119.97688"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       xml:space="preserve"><tspan
+         y="797.00562"
+         x="119.97688"
+         id="tspan4526"
+         sodipodi:role="line">Return mapped work</tspan></text>
+    <rect
+       y="105.93363"
+       x="444.28571"
+       height="302.19205"
+       width="332.16132"
+       id="rect4232"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <flowRoot
+       transform="translate(550.83903,-88)"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="flowRoot4234"
+       xml:space="preserve"><flowRegion
+         id="flowRegion4236"><rect
+           y="132.3622"
+           x="95.714287"
+           height="122.0203"
+           width="333.87241"
+           id="rect4238" /></flowRegion><flowPara
+         id="flowPara4240">Master Node</flowPara></flowRoot>    <g
+       transform="translate(393.53183,-26)"
+       id="g4242">
+      <rect
+         style="fill:none;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="rect4244"
+         width="107.24856"
+         height="98.582008"
+         x="139.21027"
+         y="196.13519" />
+      <rect
+         y="206.13519"
+         x="151.21027"
+         height="98.582008"
+         width="107.24856"
+         id="rect4246"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <rect
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="rect4248"
+         width="107.24856"
+         height="98.582008"
+         x="163.21027"
+         y="218.13519" />
+      <rect
+         y="230.13519"
+         x="175.21027"
+         height="98.582008"
+         width="107.24856"
+         id="rect4250"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <rect
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="rect4252"
+         width="107.24856"
+         height="98.582008"
+         x="187.21027"
+         y="242.13519" />
+    </g>
+    <text
+       sodipodi:linespacing="125%"
+       id="text4254"
+       y="362.69199"
+       x="496.17688"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       xml:space="preserve"><tspan
+         y="362.69199"
+         x="496.17688"
+         id="tspan4256"
+         sodipodi:role="line">Task Queue</tspan></text>
+    <g
+       id="g4310"
+       transform="translate(543.4517,127.36041)">
+      <rect
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="rect4312"
+         width="332.16132"
+         height="302.19205"
+         x="62.213772"
+         y="547.71283" />
+      <flowRoot
+         xml:space="preserve"
+         id="flowRoot4314"
+         style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         transform="translate(19.122555,443.77916)"><flowRegion
+           id="flowRegion4316"><rect
+             id="rect4318"
+             width="232.85715"
+             height="120"
+             x="95.714287"
+             y="132.3622" /></flowRegion><flowPara
+           id="flowPara4320">Slave Node</flowPara></flowRoot>      <circle
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="circle4322"
+         cx="228.29443"
+         cy="696.93066"
+         r="56.568546" />
+      <flowRoot
+         xml:space="preserve"
+         id="flowRoot4324"
+         style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         transform="translate(-30,18)"><flowRegion
+           id="flowRegion4326"><rect
+             id="rect4328"
+             width="357.59399"
+             height="107.07617"
+             x="105.05586"
+             y="751.33673" /></flowRegion><flowPara
+           id="flowPara4330">Mapper Worker</flowPara></flowRoot>    </g>
+    <g
+       transform="translate(989.4517,127.36041)"
+       id="g4332">
+      <rect
+         y="547.71283"
+         x="62.213772"
+         height="302.19205"
+         width="332.16132"
+         id="rect4334"
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <flowRoot
+         transform="translate(19.122555,443.77916)"
+         style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         id="flowRoot4336"
+         xml:space="preserve"><flowRegion
+           id="flowRegion4338"><rect
+             y="132.3622"
+             x="95.714287"
+             height="120"
+             width="232.85715"
+             id="rect4340" /></flowRegion><flowPara
+           id="flowPara4342">Slave Node</flowPara></flowRoot>      <circle
+         r="56.568546"
+         cy="696.93066"
+         cx="228.29443"
+         id="circle4344"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <flowRoot
+         transform="translate(-30,18)"
+         style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         id="flowRoot4346"
+         xml:space="preserve"><flowRegion
+           id="flowRegion4348"><rect
+             y="751.33673"
+             x="105.05586"
+             height="107.07617"
+             width="357.59399"
+             id="rect4350" /></flowRegion><flowPara
+           id="flowPara4352">Mapper Worker</flowPara></flowRoot>    </g>
+    <circle
+       r="56.568546"
+       cy="226.29108"
+       cx="915.74615"
+       id="circle4373"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <circle
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="circle4375"
+       cx="927.74615"
+       cy="238.29108"
+       r="56.568546" />
+    <circle
+       r="56.568546"
+       cy="252.29108"
+       cx="941.74615"
+       id="circle4377"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+  </g>
+</svg>
